@@ -17,7 +17,7 @@ set8 = [150, 330]
 angleSet = [set1, set2, set3, set4, set5, set6, set7, set8]
 
 
-def cordinateGeo(startIndex=0, lastIndex=19):
+def cordinateGeo(startIndex=0, lastIndex=26):
     """
 
     :param startIndex:
@@ -179,11 +179,59 @@ def cordinateGeo(startIndex=0, lastIndex=19):
             points4.append(p4[1])
             question = getQuestion(Qtype)
             hints = getHints(Qtype)
-            options = getOptions(Qtype, e=[equation], points=[points1, points2, points3, points4], set=angleSet[temp1])
+            options = getOptions(Qtype, eq=[equation], points=[points1, points2, points3, points4], set=angleSet[temp1])
             OFmap = options[1]
             options = options[0]
             feedback = getOptionsNFeedback(Qtype, options, OFmap)
-
+        elif Qtype == 20 or Qtype == 21 or Qtype == 22 or Qtype == 23:
+            eq = []
+            if Qtype == 20:
+                eq = [1, 0, random.randint(-12, 12)]
+            elif Qtype == 21:
+                eq = [0, 1, random.randint(-12, 12)]
+            elif Qtype == 22:
+                eq = [1, 0, 0]
+            elif Qtype == 23:
+                eq = [0, 1, 0]
+            question = getQuestion(Qtype, e=eq)
+            hints = getHints(Qtype)
+            options = getOptions(Qtype, eq=eq, set=angleSet[temp1])
+            OFmap = options[1]
+            options = options[0]
+            feedback = getOptionsNFeedback(Qtype, options, OFmap)
+        elif Qtype == 24 or Qtype == 25:
+            points1 = getRandomLinePoints()
+            y = points1[1]
+            loop = True
+            while loop:
+                points2 = getRandomLinePoints()
+                points3 = getRandomLinePoints()
+                points4 = getRandomLinePoints()
+                x1 = [points2[0], points2[2], points3[0], points3[2], points4[0], points4[2]]
+                y1 = [points2[1], points2[3], points3[1], points3[3], points4[1], points4[3]]
+                if 0 not in x1 and y not in y1:
+                    loop = False
+            eq1 = getEqFromPoints(points1)
+            eq2 = getEqFromPoints(points2)
+            eq3 = getEqFromPoints(points3)
+            eq4 = getEqFromPoints(points4)
+            eq = [eq1, eq2, eq3, eq4]
+            question = getQuestion(Qtype, p=[points1])
+            hints = getHints(Qtype)
+            options = getOptions(Qtype, eq=eq, set=angleSet[temp1])
+            OFmap = options[1]
+            options = options[0]
+            feedback = getOptionsNFeedback(Qtype, options, OFmap)
+        elif Qtype == 26:
+            x = random.randint(-12, 12)
+            y = random.randint(-12, 12)
+            p = [x, y]
+            question = getQuestion(Qtype, p=[p])
+            hints = getHints(Qtype)
+            options = getOptions(Qtype, points=[p], set=angleSet[temp1])
+            OFmap = options[1]
+            options = options[0]
+            feedback = getOptionsNFeedback(Qtype, options, OFmap)
         else:
             points = getLinePoints(slope=slope)
             equation = getEqFromPoints(points)
@@ -393,10 +441,16 @@ def getQuestion(Qtype=0, m=0, i=0, p=0, e=0):
         ques = "Which of these lines is perpendicular to the line " + getFormattedEq(e)
     elif Qtype == 19:
         ques = "Which of these three points are collinear ?"
+    elif Qtype == 20 or Qtype == 21 or Qtype == 22 or Qtype == 23:
+        ques = "The equation " + getFormattedEq(e) + " represents"
+    elif Qtype == 24 or Qtype == 25:
+        ques = "Of the given lines, the line which cuts the axis at " + str((p[0], p[1])) + " is"
+    elif Qtype == 26:
+        ques = "The point of intersection of lines x=" + str(p[0]) + " and y=" + str(p[1]) + " is"
     return ques
 
 
-def getOptions(Qtype, i=0, m=0, e=0, set=0, points=0):
+def getOptions(Qtype, i=0, m=0, eq=0, set=0, points=0):
     """
 
     :param Qtype:
@@ -406,10 +460,10 @@ def getOptions(Qtype, i=0, m=0, e=0, set=0, points=0):
     :param set:
     :return:
     """
-    if type(e) is list:
-        if len(e) > 1:
-            e1 = e[1]
-        e = e[0]
+    if type(eq) is list:
+        if len(eq) > 1:
+            e1 = eq[1]
+        e = eq[0]
     options = []
     OFmap = []
     sign = random.randint(0, 1)
@@ -420,7 +474,7 @@ def getOptions(Qtype, i=0, m=0, e=0, set=0, points=0):
         else:
             inverseM = 1/m
     if sign == 0:
-        print i
+        # print i
         t = math.sin(math.radians(i))
         if index == 7:
             index = 0
@@ -564,6 +618,57 @@ def getOptions(Qtype, i=0, m=0, e=0, set=0, points=0):
         options.append(ans3)
         options.append(ans4)
         OFmap = options
+    elif Qtype == 20 or Qtype == 21 or Qtype == 22 or Qtype == 23:
+        op1 = "a line parallel to the Y axis"
+        op2 = "a line parallel to the X axis"
+        op3 = "the Y axis"
+        op4 = "the X axis"
+        op5 = "a line parallel to the Y axis but not the Y axis"
+        op6 = "a line parallel to the X axis but not the X axis"
+        if Qtype == 20:
+            options.append(op1)
+            options.append(op2)
+            options.append(op3)
+            options.append(op4)
+        elif Qtype == 21:
+            options.append(op2)
+            options.append(op1)
+            options.append(op3)
+            options.append(op4)
+        elif Qtype == 22:
+            options.append(op3)
+            options.append(op4)
+            options.append(op5)
+            options.append(op6)
+        elif Qtype == 23:
+            options.append(op4)
+            options.append(op3)
+            options.append(op6)
+            options.append(op5)
+        OFmap = options
+    elif Qtype == 24 or Qtype == 25:
+        # print eq
+        options.append(getFormattedEq(eq[0]))
+        options.append(getFormattedEq(eq[1]))
+        options.append(getFormattedEq(eq[2]))
+        options.append(getFormattedEq(eq[3]))
+        OFmap = options
+    elif Qtype == 26:
+        p1 = points[0][0]
+        p2 = points[0][1]
+        loop = True
+        while loop:
+            p3 = random.randint(-12, 12)
+            p4 = random.randint(-12, 12)
+            if p3 != p1 and p3 != p2 and p3 != p4:
+                loop = False
+        options.append(str((p1, p2)))
+        if p2 == p1:
+            p2 = p1 + 1
+        options.append(str((p2, p1)))
+        options.append(str((p3, p4)))
+        options.append(str((p4, p3)))
+        OFmap = options
     return [options, OFmap]
 
 
@@ -618,6 +723,14 @@ def getOptionsNFeedback(Qtype, option, OFmap):
     elif Qtype == 18:
         feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
     elif Qtype == 19:
+        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
+    elif Qtype == 20 or Qtype == 21:
+        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
+    elif Qtype == 22 or Qtype == 23:
+        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
+    elif Qtype == 24 or Qtype == 25:
+        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
+    elif Qtype == 26:
         feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
     count = 0
     for x in option:
@@ -725,6 +838,18 @@ def getHints(Qtype=0, i=0, p=None):
         hint.append(hintStr6)
         hint.append(hintStr9)
         hint.append(hintStr11)
+    elif Qtype == 20 or Qtype == 21 or Qtype == 22 or Qtype == 23:
+        hint.append(hintStr6)
+        hint.append(hintStr9)
+        hint.append(hintStr11)
+    elif Qtype == 24 or Qtype == 25:
+        hint.append(hintStr6)
+        hint.append(hintStr9)
+        hint.append(hintStr11)
+    elif Qtype == 26:
+        hint.append(hintStr6)
+        hint.append(hintStr9)
+        hint.append(hintStr11)
     return hint
 
 
@@ -825,7 +950,15 @@ def getFormattedEq(eq):
             eq[1] = int(eq[1])
         else:
             eq[1] = round(eq[1], 2)
-        temp += GetCoeffString(getSignedString(eq[1])) + "y"
+        if eq[0] == 0:
+            temp += GetCoeffString(eq[1]) + "y"
+        else:
+            if eq[1] == 1:
+                temp += "+y"
+            elif eq[1] == -1:
+                temp += "-y"
+            else:
+                temp += getSignedString(eq[1]) + "y"
     if eq[2] != 0:
         if eq[2] % 1 == 0:
             eq[2] = int(eq[2])
