@@ -17,7 +17,7 @@ set8 = [150, 330]
 angleSet = [set1, set2, set3, set4, set5, set6, set7, set8]
 
 
-def cordinateGeo(startIndex=0, lastIndex=26):
+def cordinateGeo():
     """
 
     :param startIndex:
@@ -26,7 +26,10 @@ def cordinateGeo(startIndex=0, lastIndex=26):
     Mtype = 1
     Mtype1 = 2
     ques = []
-    for x in range(startIndex, lastIndex):
+    withImages = [1, 2, 4, 5, 7, 8, 10, 12]
+    withoutImages = [3, 6, 9, 11] + range(13, 44)
+    for x in withoutImages:
+        typeSet1 = [27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39]
         temp = {}
         Qtype = x + 1
         temp1 = random.randint(0, 7)
@@ -232,6 +235,57 @@ def cordinateGeo(startIndex=0, lastIndex=26):
             OFmap = options[1]
             options = options[0]
             feedback = getOptionsNFeedback(Qtype, options, OFmap)
+        elif Qtype in typeSet1:
+            loop = True
+            while loop:
+                points = getRandomLinePoints()
+                if points[0] != points[2] and points[1] != points[3] and points[0] != 0 and points[1] != 0 and \
+                   points[2] != 0 or points[3] != 0:
+                    loop = False
+            eq = getEqFromPoints(points)
+            question = getQuestion(Qtype,p=[points], e=eq)
+            hints = getHints(Qtype)
+            options = getOptions(Qtype, eq=[eq], points=[points], set=angleSet[temp1])
+            OFmap = options[1]
+            options = options[0]
+            feedback = getOptionsNFeedback(Qtype, options, OFmap)
+        elif Qtype == 40 or Qtype == 41:
+            temp1 = random.sample([1, 3, 5, 7], 1)[0]
+            points = getRandomLinePoints()
+            if Qtype == 40:
+                inclination = getInclination(temp=temp1, pi=True)
+            elif Qtype == 41:
+                inclination = getInclination(temp=temp1)
+            inclination1 = getInclination(temp=temp1)
+            m = getSlope(inclination1)
+            question = getQuestion(Qtype,i=inclination,p=[points])
+            hints = getHints(Qtype)
+            options = getOptions(Qtype,m=m,i=inclination1,points=[points],set=angleSet[temp1])
+            OFmap = options[1]
+            options = options[0]
+            feedback = getOptionsNFeedback(Qtype, options, OFmap)
+        elif Qtype == 42:
+            points = getRandomLinePoints()
+            if points[0] != 0 and points[2] != 0:
+                points[0] = 0
+            m = getSlopeFromPoints(points)
+            question = getQuestion(Qtype,m=m,p=[points])
+            hints = getHints(Qtype)
+            options = getOptions(Qtype, m=m, points=points, set=angleSet[temp1])
+            OFmap = options[1]
+            options = options[0]
+            feedback = getOptionsNFeedback(Qtype, options, OFmap)
+        elif Qtype == 43:
+            points = getRandomLinePoints()
+            points[1] = 0
+            eq = getEqFromPoints(points)
+            equation = [eq[0], eq[1], eq[2] + 6]
+            question = getQuestion(Qtype,p=[points],e=equation)
+            hints = getHints(Qtype)
+            options = getOptions(Qtype,eq=eq,set=angleSet[temp1])
+            OFmap = options[1]
+            options = options[0]
+            feedback = getOptionsNFeedback(Qtype, options, OFmap)
         else:
             points = getLinePoints(slope=slope)
             equation = getEqFromPoints(points)
@@ -244,10 +298,10 @@ def cordinateGeo(startIndex=0, lastIndex=26):
             feedback = getOptionsNFeedback(Qtype, options, OFmap)
             a = [getStringToDisplay(Qtype=Qtype, equation=equation, m=m, i=inclination)]
             generateSVG([equation], a, str(Qtype), Qtype, [points])
-
         temp['Q'] = question
         temp['hints'] = hints
         temp['details'] = feedback
+        print temp
         ques.append(temp)
         print "\n\n"
         print "NEW QUESTION...........................\n"
@@ -364,13 +418,22 @@ def getEqFromPoints(points):
     return [a, b, c]
 
 
-def getInclination(temp=random.randint(0, 7)):
+def getInclination(temp=random.randint(0, 7), pi=False):
     """
 
     :rtype : object
     """
     temp1 = random.randint(0, 1)
     theta = angleSet[temp][temp1]
+    if pi:
+        if temp == 1:
+            theta = "&Pi;/6"
+        elif temp == 3:
+            theta = "&Pi;/3"
+        elif temp == 5:
+            theta = "2&Pi;/3"
+        elif temp == 7:
+            theta = "5&Pi;/6"
     # print theta
     return theta
 
@@ -447,6 +510,25 @@ def getQuestion(Qtype=0, m=0, i=0, p=0, e=0):
         ques = "Of the given lines, the line which cuts the axis at " + str((p[0], p[1])) + " is"
     elif Qtype == 26:
         ques = "The point of intersection of lines x=" + str(p[0]) + " and y=" + str(p[1]) + " is"
+    elif Qtype == 27 or Qtype == 28 or Qtype == 29 or Qtype == 30 or Qtype == 31 or Qtype == 32:
+        form = {27: 'Slope-Point', 28: 'Slope-Intercept', 29: 'Two-Points', 30: 'Double-Intercept', 31: 'Parametric',
+                32: 'Normal'}
+        ques = "Which of these equation represent a line in " + form[Qtype] + " form"
+    elif Qtype == 33 or Qtype == 34 or Qtype == 35 or Qtype == 36 or Qtype == 37 or Qtype == 38 or Qtype == 39:
+        form = {33: 'SP', 34: 'SI', 35: 'TP', 36: 'DI', 37: 'P', 38: 'Po', 39: 'N'}
+        ques = "The equation \'" + getFormattedEq(eq=e, eqtype=form[Qtype], points=p) + "\' is in "
+    elif Qtype == 40:
+        ques = "The equation of a line whose inclination is " + str(i) + " and passes through the point " + \
+               str((p[0], p[1])) + " is"
+    elif Qtype == 41:
+        ques = "The equation of a line whose inclination is " + str(i) + " degree and passes through the point " + \
+               str((p[0], p[1])) + " is"
+    elif Qtype == 42:
+        ques = "If a line has slope as " + str(m) + ", cuts the Y axis at " + str((p[0], p[1])) + ", its equation" \
+               " would be"
+    elif Qtype == 43:
+        ques = "If a line is parallel to the line " + getFormattedEq(e) + " and has x intercept as " + str(p[0]) + \
+               ", its equation would be"
     return ques
 
 
@@ -669,6 +751,71 @@ def getOptions(Qtype, i=0, m=0, eq=0, set=0, points=0):
         options.append(str((p3, p4)))
         options.append(str((p4, p3)))
         OFmap = options
+    elif Qtype == 27 or Qtype == 28 or Qtype == 29 or Qtype == 30 or Qtype == 31 or Qtype == 32:
+        eqType = {27: ["SP", "SI", "TP", "DI"], 28: ["SI", "SP", "TP", "DI"], 29: ["TP", "SP", "SI", "DI"],
+                  30: ["DI", "SP", "SI", "TP"], 31: ["P", "N", "PY", "PX"], 32: ["N", "P", "PY", "PX"]}
+        op1 = getFormattedEq(eq[0],eqtype=eqType[Qtype][0], points=points[0])
+        op2 = getFormattedEq(eq[0],eqtype=eqType[Qtype][1], points=points[0])
+        op3 = getFormattedEq(eq[0],eqtype=eqType[Qtype][2], points=points[0])
+        op4 = getFormattedEq(eq[0],eqtype=eqType[Qtype][3], points=points[0])
+        options.append(op1)
+        options.append(op2)
+        options.append(op3)
+        options.append(op4)
+        OFmap = options
+    elif Qtype == 33 or Qtype == 34 or Qtype == 35 or Qtype == 36 or Qtype == 37 or Qtype == 38 or Qtype == 39:
+        form = {33: 'Slope-Point', 34: 'Slope-Intercept', 35: 'Two-Points', 36: 'Double-Intercept', 37: 'Parametric',
+                38: 'Polar', 39: 'Normal'}
+        eqType = {33: [33, 34, 35, 36], 34: [34, 33, 35, 36], 35: [35, 33, 36, 34], 36: [36, 33, 34, 35],
+                  37: [37, 39, 33, 34], 38: [38, 39, 33, 34], 39: [39, 38, 35, 36]}
+        options.append(form[eqType[Qtype][0]] + " form")
+        options.append(form[eqType[Qtype][1]] + " form")
+        options.append(form[eqType[Qtype][2]] + " form")
+        options.append(form[eqType[Qtype][3]] + " form")
+        OFmap = options
+    elif Qtype == 40 or Qtype == 41:
+        def op(i, point, m, reverseI, num):
+            c = point[1] - (m[0] / m[1] * point[0])
+            if num == 3 or num == 4:
+                c = -c + 1
+            if num == 2:
+                i = reverseI
+            m1 = getFormattedSlope(i, "eq")
+            eq = "y = " + m1 + "(x" + getSignedString(c) + ")"
+            return eq
+        reverseI = i
+        if i in set2:
+            reverseI = angleSet[3][0]
+        elif i in set4:
+            reverseI = angleSet[1][0]
+        elif i in set6:
+            reverseI = angleSet[7][0]
+        elif i in set8:
+            reverseI = angleSet[5][0]
+        op1 = op(i, points[0], m, reverseI, 1)
+        op2 = op(i, points[0], m, reverseI, 2)
+        op3 = op(i, points[0], m, reverseI, 3)
+        op4 = op(i, points[0], m, reverseI, 4)
+        options = [op1, op2, op3, op4]
+        OFmap = options
+
+    elif Qtype == 42:
+        eq = getEqFromPoints(points)
+        op1 = getFormattedEq(eq)
+        op2 = getFormattedEq([eq[0], eq[1], eq[2] + 4])
+        op3 = getFormattedEq([eq[0], eq[1], eq[2] + 8])
+        op4 = getFormattedEq([eq[0], eq[1], eq[2] - 4])
+        options = [op1, op2, op3, op4]
+        OFmap = options
+
+    elif Qtype == 43:
+        op1 = getFormattedEq(eq)
+        op2 = getFormattedEq([eq[0], -eq[1], eq[2] + 4])
+        op3 = getFormattedEq([eq[0], -eq[1], eq[2] + 8])
+        op4 = getFormattedEq([-eq[0], eq[1], eq[2] - 4])
+        options = [op1, op2, op3, op4]
+        OFmap = options
+
     return [options, OFmap]
 
 
@@ -731,6 +878,12 @@ def getOptionsNFeedback(Qtype, option, OFmap):
     elif Qtype == 24 or Qtype == 25:
         feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
     elif Qtype == 26:
+        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
+    elif Qtype == 27 or Qtype == 28 or Qtype == 29 or Qtype == 30 or Qtype == 31 or Qtype == 32:
+        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
+    elif Qtype == 33 or Qtype == 34 or Qtype == 35 or Qtype == 36 or Qtype == 37 or Qtype == 38 or Qtype == 39:
+        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
+    elif Qtype == 40 or Qtype == 41 or Qtype == 42 or Qtype == 43:
         feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
     count = 0
     for x in option:
@@ -850,6 +1003,38 @@ def getHints(Qtype=0, i=0, p=None):
         hint.append(hintStr6)
         hint.append(hintStr9)
         hint.append(hintStr11)
+    elif Qtype == 27 or Qtype == 28 or Qtype == 29 or Qtype == 30:
+        hint.append(hintStr6)
+        hint.append(hintStr9)
+        hint.append(hintStr11)
+    elif Qtype == 31 or Qtype == 32:
+        hint.append(hintStr6)
+        hint.append(hintStr9)
+        hint.append(hintStr11)
+    elif Qtype == 33 or Qtype == 34 or Qtype == 35 or Qtype == 36:
+        hint.append(hintStr6)
+        hint.append(hintStr9)
+        hint.append(hintStr11)
+    elif Qtype == 37 or Qtype == 38 or Qtype == 39:
+        hint.append(hintStr6)
+        hint.append(hintStr9)
+        hint.append(hintStr11)
+    elif Qtype == 40:
+        hint.append(hintStr6)
+        hint.append(hintStr9)
+        hint.append(hintStr11)
+    elif Qtype == 41:
+        hint.append(hintStr6)
+        hint.append(hintStr9)
+        hint.append(hintStr11)
+    elif Qtype == 42:
+        hint.append(hintStr6)
+        hint.append(hintStr9)
+        hint.append(hintStr11)
+    elif Qtype == 43:
+        hint.append(hintStr6)
+        hint.append(hintStr9)
+        hint.append(hintStr11)
     return hint
 
 
@@ -930,7 +1115,7 @@ def getCollinearPoints(equation):
     return [x, y]
 
 
-def getFormattedEq(eq):
+def getFormattedEq(eq=None, eqtype=None, points=None):
     """
 
 
@@ -939,33 +1124,81 @@ def getFormattedEq(eq):
     :return: 
     """
     temp = ""
-    if eq[0] != 0:
-        if eq[0] % 1 == 0:
-            eq[0] = int(eq[0])
-        else:
-            eq[0] = round(eq[0], 2)
-        temp += GetCoeffString(eq[0]) + "x"
-    if eq[1] != 0:
-        if eq[1] % 1 == 0:
-            eq[1] = int(eq[1])
-        else:
-            eq[1] = round(eq[1], 2)
-        if eq[0] == 0:
-            temp += GetCoeffString(eq[1]) + "y"
-        else:
-            if eq[1] == 1:
-                temp += "+y"
-            elif eq[1] == -1:
-                temp += "-y"
+    if not eqtype:
+        if eq[0] != 0:
+            if eq[0] % 1 == 0:
+                eq[0] = int(eq[0])
             else:
-                temp += getSignedString(eq[1]) + "y"
-    if eq[2] != 0:
-        if eq[2] % 1 == 0:
-            eq[2] = int(eq[2])
+                eq[0] = round(eq[0], 2)
+            temp += GetCoeffString(eq[0]) + "x"
+        if eq[1] != 0:
+            if eq[1] % 1 == 0:
+                eq[1] = int(eq[1])
+            else:
+                eq[1] = round(eq[1], 2)
+            if eq[0] == 0:
+                temp += GetCoeffString(eq[1]) + "y"
+            else:
+                if eq[1] == 1:
+                    temp += "+y"
+                elif eq[1] == -1:
+                    temp += "-y"
+                else:
+                    temp += getSignedString(eq[1]) + "y"
+        if eq[2] != 0:
+            if eq[2] % 1 == 0:
+                eq[2] = int(eq[2])
+            else:
+                eq[2] = round(eq[2], 2)
+            temp += getSignedString(eq[2])
+        temp += " = 0"
+    else:
+        x1 = points[0]
+        y1 = points[1]
+        x2 = points[2]
+        y2 = points[3]
+        m = (y2 - y1) / (x2 - x1)
+        if m % 1 == 0:
+            m = int(m)
         else:
-            eq[2] = round(eq[2], 2)
-        temp += getSignedString(eq[2])
-    temp += " = 0"
+            m = round(m ,2)
+        if x1 % 1 == 0:
+            x1 = int(x1)
+        if y1 % 1 == 0:
+            y1 = int(y1)
+        if x2 % 1 == 0:
+            x2 = int(x2)
+        if y2 % 1 == 0:
+            y2 = int(y2)
+        if eqtype == "SP":
+            temp += "y" + getSignedString(-y1) + " = " + str(m) + "(x" + getSignedString(-x1) + ")"
+        elif eqtype == "SI":
+            c = round(-((y2-y1)/(x2-x1)) * x1 + y1)
+            if c % 1 == 0:
+                c = int(c)
+            temp += "y = " + str(m) + "x" + getSignedString(c)
+        elif eqtype == "TP":
+            temp += "(y" + getSignedString(-y1) + ")/" + getSignedString(y2-y1) + " = (x" + getSignedString(-x1) + \
+                    ")/" + getSignedString(x2-x1)
+        elif eqtype == "DI":
+            temp += "y/" + getSignedString(y1) + "+ x/" + getSignedString(x1) + " = 1"
+        elif eqtype == "P" or eqtype == "Po":
+            temp += "y = " + str(y1) + getSignedString(-eq[0]) + "cos&Theta; ;"
+            temp += "x = " + str(x1) + getSignedString(eq[1]) + "cos&Theta;"
+        elif eqtype == "N":
+            t = random.randint(0, 7)
+            t1 = angleSet[t][1]
+            temp += "x cos" + str(t1) + "+y sin" + str(t1) + " = " + str(t)
+        elif eqtype == "PX":
+            t = random.randint(0, 7)
+            t1 = angleSet[t][0]
+            temp += "x = " + str(x1) + " cos" + str(t1)
+        elif eqtype == "PY":
+            t = random.randint(0, 7)
+            t1 = angleSet[t][0]
+            temp += "y = " + str(y1) + " cos" + str(t1)
+
+
     return temp
 
 
@@ -985,5 +1218,33 @@ def getStringToDisplay(Qtype, equation=0, m=0, i=0):
     else:
         display = getFormattedEq(equation)
     return display
+
+
+def getFormattedSlope(deg=None, where=None):
+    fm = ""
+    if deg:
+        if deg in set1:
+            fm = "0"
+        elif deg in set2:
+            fm = "1/(&radic;3)"
+        elif deg in set3:
+            if where == "eq":
+                fm = ""
+            else:
+                fm = "1"
+        elif deg in set4:
+            fm = "&radic;3"
+        elif deg in set5:
+            fm = "&infin;"
+        elif deg in set6:
+            fm = "-&radic;3"
+        elif deg in set7:
+            if where == "eq":
+                fm = "-"
+            else:
+                fm = "-1"
+        elif deg in set8:
+            fm = "-1/(&radic;3)"
+    return fm
 
 cordinateGeo()
