@@ -17,7 +17,7 @@ set8 = [150, 330]
 angleSet = [set1, set2, set3, set4, set5, set6, set7, set8]
 
 
-def cordinateGeo():
+def cordinateGeo(assess, num=3, name="test"):
     """
 
     :param startIndex:
@@ -26,12 +26,18 @@ def cordinateGeo():
     Mtype = 1
     Mtype1 = 2
     ques = []
-    withImages = [1, 2, 4, 5, 7, 8, 10, 12]
-    withoutImages = [3, 6, 9, 11] + range(13, 44)
-    for x in withoutImages:
+    withImages = [1, 2, 4, 5, 7, 8, 10, 12, 15, 16, 17, 18, 19]
+    withoutImages = [3, 6, 9, 11, 13, 14] + range(20, 44)
+    if num == 1:
+        assess = [val for val in assess if val in withImages]
+    elif num == 2:
+        assess = [val for val in assess if val in withoutImages]
+    count = 0
+    for x in assess:
+        count += 1
         typeSet1 = [27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39]
         temp = {}
-        Qtype = x + 1
+        Qtype = x
         temp1 = random.randint(0, 7)
         inclination = getInclination(temp=temp1)
         m = getSlope(inclination)
@@ -205,6 +211,7 @@ def cordinateGeo():
         elif Qtype == 24 or Qtype == 25:
             points1 = getRandomLinePoints()
             y = points1[1]
+            x = points1[0]
             loop = True
             while loop:
                 points2 = getRandomLinePoints()
@@ -212,8 +219,14 @@ def cordinateGeo():
                 points4 = getRandomLinePoints()
                 x1 = [points2[0], points2[2], points3[0], points3[2], points4[0], points4[2]]
                 y1 = [points2[1], points2[3], points3[1], points3[3], points4[1], points4[3]]
-                if 0 not in x1 and y not in y1:
-                    loop = False
+                if Qtype == 24:
+                    if 0 not in x1 and y not in y1:
+                        loop = False
+                        points1[0] = 0
+                if Qtype == 25:
+                    if 0 not in y1 and x not in x1:
+                        loop = False
+                        points1[1] = 0
             eq1 = getEqFromPoints(points1)
             eq2 = getEqFromPoints(points2)
             eq3 = getEqFromPoints(points3)
@@ -239,8 +252,8 @@ def cordinateGeo():
             loop = True
             while loop:
                 points = getRandomLinePoints()
-                if points[0] != points[2] and points[1] != points[3] and points[0] != 0 and points[1] != 0 and \
-                   points[2] != 0 or points[3] != 0:
+                if (points[0] != points[2]) and (points[1] != points[3]) and (points[0] != 0) and (points[1] != 0) and \
+                        (points[2] != 0) and (points[3] != 0):
                     loop = False
             eq = getEqFromPoints(points)
             question = getQuestion(Qtype,p=[points], e=eq)
@@ -305,12 +318,14 @@ def cordinateGeo():
         ques.append(temp)
         print "\n\n"
         print "NEW QUESTION...........................\n"
+        print Qtype
         print "Question: ", question
         print "Hints: ", hints
         print "Options: ", options
         print "OFmap: ", OFmap
         print "Details: ", feedback
-    generateCSV(ques)
+    generateCSV(ques, name)
+    print "Done ", count
 
 
 def getRandomLinePoints():
@@ -465,13 +480,24 @@ def getQuestion(Qtype=0, m=0, i=0, p=0, e=0):
     :return:
     """
     if type(p) is list:
+        c1 = 0
+        for x in p:
+            c2 = 0
+            for y in x:
+                if y % 1 == 0:
+                    p[c1][c2] = int(p[c1][c2])
+                else:
+                    p[c1][c2] = round(p[c1][c2], 2)
+                c2 += 1
+            c1 += 1
         if len(p) > 1:
             p1 = p[1]
         p = p[0]
     ques = ""
     if Qtype == 1 or Qtype == 3:
         ques = "Given an inclination of the line as " + str(i) + " degrees, find the slope of the line"
-        ques += "<img>" + str(Qtype) + "</img>"
+        if Qtype == 1:
+            ques += "<img>" + str(Qtype) + "</img>"
     elif Qtype == 2:
         ques = "Which of these figures represent a line with slope as " + str(m) + ": "
     elif Qtype == 4 or Qtype == 6:
@@ -524,7 +550,7 @@ def getQuestion(Qtype=0, m=0, i=0, p=0, e=0):
         ques = "The equation of a line whose inclination is " + str(i) + " degree and passes through the point " + \
                str((p[0], p[1])) + " is"
     elif Qtype == 42:
-        ques = "If a line has slope as " + str(m) + ", cuts the Y axis at " + str((p[0], p[1])) + ", its equation" \
+        ques = "If a line has slope as " + str(round(m, 2)) + ", cuts the Y axis at " + str((p[0], p[1])) + ", its equation" \
                " would be"
     elif Qtype == 43:
         ques = "If a line is parallel to the line " + getFormattedEq(e) + " and has x intercept as " + str(p[0]) + \
@@ -600,11 +626,16 @@ def getOptions(Qtype, i=0, m=0, eq=0, set=0, points=0):
                 options.append("tan<sup>-1</sup>(" + str(90) + ")")
                 OFmap = options
             else:
-                t1 = GetNewIfEqual([m], inverseM)
+                if m == 1 or m == -1:
+                    t1 = GetNewIfEqual([m])
+                else:
+                    t1 = GetNewIfEqual([m], inverseM)
                 options.append(t1)
-                options.append("tan<sup>-1</sup>(" + str(m) + ")")
-                options.append("tan<sup>-1</sup>(" + str(t1) + ")")
-                OFmap = options
+                t2 = "tan<sup>-1</sup>(" + str(m) + ")"
+                t3 = "tan<sup>-1</sup>(" + str(t1) + ")"
+                options.append(t2)
+                options.append(t3)
+                OFmap = [m, inverseM, t2, t3]
                 OFmap[1] = round(inverseM, 2)
     elif Qtype == 5:
         options.append("Figure 1 : Line connecting coordinates (5,4) and (9,6)")
@@ -774,13 +805,13 @@ def getOptions(Qtype, i=0, m=0, eq=0, set=0, points=0):
         options.append(form[eqType[Qtype][3]] + " form")
         OFmap = options
     elif Qtype == 40 or Qtype == 41:
-        def op(i, point, m, reverseI, num):
+        def op(inc, point, m, reverseI, num):
             c = point[1] - (m[0] / m[1] * point[0])
             if num == 3 or num == 4:
                 c = -c + 1
-            if num == 2:
-                i = reverseI
-            m1 = getFormattedSlope(i, "eq")
+            if num == 2 or num == 3:
+                inc = reverseI
+            m1 = getFormattedSlope(inc, "eq")
             eq = "y = " + m1 + "(x" + getSignedString(c) + ")"
             return eq
         reverseI = i
@@ -1161,7 +1192,9 @@ def getFormattedEq(eq=None, eqtype=None, points=None):
         if m % 1 == 0:
             m = int(m)
         else:
-            m = round(m ,2)
+            m = round(m, 2)
+        if m == 0:
+            m = random.randint(2, 9)
         if x1 % 1 == 0:
             x1 = int(x1)
         if y1 % 1 == 0:
@@ -1176,12 +1209,56 @@ def getFormattedEq(eq=None, eqtype=None, points=None):
             c = round(-((y2-y1)/(x2-x1)) * x1 + y1)
             if c % 1 == 0:
                 c = int(c)
-            temp += "y = " + str(m) + "x" + getSignedString(c)
+            temp += "y = " + GetCoeffString(m) + "x" + getSignedString(c)
         elif eqtype == "TP":
-            temp += "(y" + getSignedString(-y1) + ")/" + getSignedString(y2-y1) + " = (x" + getSignedString(-x1) + \
-                    ")/" + getSignedString(x2-x1)
+            d1 = GetCoeffString(y2 - y1)
+            d2 = GetCoeffString(x2 - x1)
+            if d1 == "":
+                pass
+            elif d1 == "-":
+                d1 == "/(-1)"
+            else:
+                t1 = d1
+                if "-" in t1:
+                    d1 = "/(" + t1 + ")"
+                else:
+                    d1 = "/" + t1
+            if d2 == "":
+                pass
+            elif d2 == "-":
+                d2 == "/(-1)"
+            else:
+                t2 = d2
+                if "-" in t2:
+                    d2 = "/(" + t2 + ")"
+                else:
+                    d2 = "/" + t2
+            temp += "(y" + getSignedString(-y1) + ")" + d1 + " = (x" + getSignedString(-x1) + \
+                    ")" + d2
         elif eqtype == "DI":
-            temp += "y/" + getSignedString(y1) + "+ x/" + getSignedString(x1) + " = 1"
+            d1 = GetCoeffString(y1)
+            d2 = GetCoeffString(x1)
+            if d1 == "":
+                pass
+            elif d1 == "-":
+                d1 == "/(-1)"
+            else:
+                t1 = d1
+                if "-" in t1:
+                    d1 = "/(" + t1 + ")"
+                else:
+                    d1 = "/" + t1
+            if d2 == "":
+                pass
+            elif d2 == "-":
+                d2 == "/(-1)"
+            else:
+                t2 = d2
+                if "-" in t2:
+                    d2 = "/(" + t2 + ")"
+                else:
+                    d2 = "/" + t2
+            temp += "y" + d1 + "+ x" + d2 + " = 1"
         elif eqtype == "P" or eqtype == "Po":
             temp += "y = " + str(y1) + getSignedString(-eq[0]) + "cos&Theta; ;"
             temp += "x = " + str(x1) + getSignedString(eq[1]) + "cos&Theta;"
@@ -1247,4 +1324,44 @@ def getFormattedSlope(deg=None, where=None):
             fm = "-1/(&radic;3)"
     return fm
 
-cordinateGeo()
+
+if __name__ == "__main__":
+    assess1 = [1, 2, 3]
+    assess2 = [4, 5, 6]
+    assess3 = [7, 8, 9]
+    assess4 = [10, 11, 12, 13, 14]
+    assess5 = [15, 16, 17, 18, 19]
+    assess6 = [20, 21, 22, 23, 24, 25, 26]
+    assess7 = [27, 28, 29, 30, 31, 32]
+    assess8 = [33, 34, 35, 36, 37, 38, 39]
+    assess9 = [40, 41, 42, 43]
+    assessImages = [1, 2, 4, 5, 7, 8, 10, 12, 15, 16, 17, 18, 19]
+    assessNoImages = [3, 6, 9, 11, 13, 14] + range(20, 44)
+    all = range(0, 44)
+    assess = [all, assess1, assess2, assess3, assess4, assess5, assess6, assess7, assess8, assess9, assessImages, assessNoImages]
+    choice = -1
+    count = 0
+    while choice not in range(0, 12):
+        if count != 0:
+            print "\nSorry! You have entered a incorrect assessment number. Please try again and " \
+                  "enter a valid number\n\n"
+        choice = input("Enter the Assessment number to generate the assessment(0-11):\n "
+                       "0 for All question in a single assessment\n"
+                       "1-9 for a specific assessment\n"
+                       "10 for all questions with images in a single assessment\n"
+                       "11 for all question without images in a single assessment:  ")
+        count += 1
+    if choice in range(0, 10):
+        choice1 = 0
+        count = 0
+        while choice1 not in range(1, 4):
+            if count != 0:
+                print "\nSorry! Incorrect input. Please try again...\n\n"
+            choice1 = input("\nPress 1 if you want questions with images only\n"
+                            "Press 2 if you want questions without images only\n"
+                            "press 3 to skip: ")
+            count += 1
+    else:
+        choice1 = 3
+    name = raw_input("Enter a name for the CSV: ")
+    cordinateGeo(assess[choice], choice1, name)

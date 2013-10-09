@@ -4,7 +4,7 @@ import csv
 from pylab import *
 
 
-def generateCSV(ques):
+def generateCSV(ques, name="test"):
     data = []
     count = 0
     withImages = [1, 2, 4, 5, 7, 8, 10, 12]
@@ -39,14 +39,15 @@ def generateCSV(ques):
                 feedback[0], feedback[1], feedback[2], feedback[3]])
         count += 1
 
-    with open('test.csv', 'wb') as fp:
+    with open(name + '.csv', 'wb') as fp:
         a = csv.writer(fp, delimiter=',')
         a.writerows(data)
     print "Done", len(data)
+    print "Generated ", name + ".csv"
 
 
 def generateSVG(eq, display, name, Qtype=0, points=None):
-    withImages = [1, 2, 4, 5, 7, 8, 10, 12]
+    withImages = [1, 2, 4, 5, 7, 8, 10, 12, 15, 16, 17, 18, 19]
     if Qtype in withImages:
         if Qtype == 16:
             p1 = points[1]
