@@ -17,7 +17,7 @@ set8 = [150, 330]
 angleSet = [set1, set2, set3, set4, set5, set6, set7, set8]
 
 
-def cordinateGeo(assess, num=3, name="test"):
+def coordinateGeo(assess, num=3, name="test"):
     """
 
     :param startIndex:
@@ -495,35 +495,35 @@ def getQuestion(Qtype=0, m=0, i=0, p=0, e=0):
         p = p[0]
     ques = ""
     if Qtype == 1 or Qtype == 3:
-        ques = "Given an inclination of the line as " + str(i) + " degrees, find the slope of the line"
+        ques = "Given an inclination of the line as " + "$" + str(i) + "$" + " degrees, find the slope of the line"
         if Qtype == 1:
             ques += "<img>" + str(Qtype) + "</img>"
     elif Qtype == 2:
-        ques = "Which of these figures represent a line with slope as " + str(m) + ": "
+        ques = "Which of these figures represent a line with slope as " + "$" + str(m) + "$" + ": "
     elif Qtype == 4 or Qtype == 6:
-        ques = "Given that a line passes through the points " + str((p[0], p[1])) + " and " + \
-               str((p[2], p[3])) + ", find the slope of the line"
+        ques = "Given that a line passes through the points " + "$" + str((p[0], p[1])) + "$" + " and " + \
+               "$" + str((p[2], p[3])) + "$" + ", find the slope of the line"
     elif Qtype == 5 or Qtype == 8:
-        ques = "Which of the figures represents a slope of " + str(m)
+        ques = "Which of the figures represents a slope of " + "$" + str(m) + "$"
     elif Qtype == 7 or Qtype == 9:
         ques = "Given a line denoted by the equation of a line " + getFormattedEq(e) + ", find the " \
                "slope of the line"
     elif Qtype == 10 or Qtype == 11:
-        ques = "If " + str((p[0], 'K')) + " & " + str((p[2], p[3])) + " are parallel to the line passing through" \
-               " the points " + str((p1[0], p1[1])) + " and " + str((p1[2], p1[3])) + " Find the value of K "
+        ques = "If " + "$" + str((p[0], 'K')) + "$" + " & " + "$" + str((p[2], p[3])) + "$" + " are parallel to the line passing through" \
+               " the points " + "$" + str((p1[0], p1[1])) + "$" + " and " + "$" + str((p1[2], p1[3])) + "$" + " Find the value of K "
     elif Qtype == 12 or Qtype == 13:
-        ques = "If the line passing through the points" + str((p[0], p[1])) + " & " + str((p[2], p[3])) + \
-               " is perpendicular to the line passing through the points " + str((p1[0], p1[1])) + " and " + \
-               str((p1[2], 'K')) + " Find the value of K "
+        ques = "If the line passing through the points" + "$" + str((p[0], p[1])) + "$" + " & " + "$" + str((p[2], p[3])) + \
+               "$" + " is perpendicular to the line passing through the points " + "$" + str((p1[0], p1[1])) + "$" + " and " + \
+               "$" + str((p1[2], 'K')) + "$" + " Find the value of K "
     elif Qtype == 14:
-        ques = "If " + str((p[0], p[1])) + ", " + str((p[2], 'K')) + " & " + str((p1[0], p1[1])) + " are collinear," \
+        ques = "If " + "$" + str((p[0], p[1])) + ", " + str((p[2], 'K')) + "$" + " & " + "$" + str((p1[0], p1[1])) + "$" + " are collinear," \
                " find the value of K"
     elif Qtype == 15:
-        ques = "If " + str((p[0], 'K')) + " & " + str((p[2], p[3])) + " are parallel to the line " +\
+        ques = "If " + "$" + str((p[0], 'K')) + "$" + " & " + "$" + str((p[2], p[3])) + "$" + " are parallel to the line " +\
                getFormattedEq(e) + ", Find the value of K "
     elif Qtype == 16:
         ques = "If the line " + getFormattedEq(e) + " is perpendicular to the line passing through the points " +\
-               str((p1[0], p1[1])) + " and " + str((p1[2], 'K')) + ", Find the value of K "
+               "$" + str((p1[0], p1[1])) + "$" + " and " + "$" + str((p1[2], 'K')) + "$" + ", Find the value of K "
     elif Qtype == 17:
         ques = "Which of these lines is parallel to the line " + getFormattedEq(e)
     elif Qtype == 18:
@@ -533,9 +533,9 @@ def getQuestion(Qtype=0, m=0, i=0, p=0, e=0):
     elif Qtype == 20 or Qtype == 21 or Qtype == 22 or Qtype == 23:
         ques = "The equation " + getFormattedEq(e) + " represents"
     elif Qtype == 24 or Qtype == 25:
-        ques = "Of the given lines, the line which cuts the axis at " + str((p[0], p[1])) + " is"
+        ques = "Of the given lines, the line which cuts the axis at " + "$" + str((p[0], p[1])) + "$" + " is"
     elif Qtype == 26:
-        ques = "The point of intersection of lines x=" + str(p[0]) + " and y=" + str(p[1]) + " is"
+        ques = "The point of intersection of lines $ x=" + str(p[0]) + "$" + " and $ y=" + str(p[1]) + "$" + " is"
     elif Qtype == 27 or Qtype == 28 or Qtype == 29 or Qtype == 30 or Qtype == 31 or Qtype == 32:
         form = {27: 'Slope-Point', 28: 'Slope-Intercept', 29: 'Two-Points', 30: 'Double-Intercept', 31: 'Parametric',
                 32: 'Normal'}
@@ -544,17 +544,17 @@ def getQuestion(Qtype=0, m=0, i=0, p=0, e=0):
         form = {33: 'SP', 34: 'SI', 35: 'TP', 36: 'DI', 37: 'P', 38: 'Po', 39: 'N'}
         ques = "The equation \'" + getFormattedEq(eq=e, eqtype=form[Qtype], points=p) + "\' is in "
     elif Qtype == 40:
-        ques = "The equation of a line whose inclination is " + str(i) + " and passes through the point " + \
-               str((p[0], p[1])) + " is"
+        ques = "The equation of a line whose inclination is " + "$" + str(i) + "$" + " and passes through the point " + \
+               "$" + str((p[0], p[1])) + "$" + " is"
     elif Qtype == 41:
-        ques = "The equation of a line whose inclination is " + str(i) + " degree and passes through the point " + \
-               str((p[0], p[1])) + " is"
+        ques = "The equation of a line whose inclination is " + "$" + str(i) + "$" + " degree and passes through the point " + \
+               "$" + str((p[0], p[1])) + "$" + " is"
     elif Qtype == 42:
-        ques = "If a line has slope as " + str(round(m, 2)) + ", cuts the Y axis at " + str((p[0], p[1])) + ", its equation" \
+        ques = "If a line has slope as " + "$" + str(round(m, 2)) + "$" + ", cuts the Y axis at " + "$" + str((p[0], p[1])) + "$" + ", its equation" \
                " would be"
     elif Qtype == 43:
-        ques = "If a line is parallel to the line " + getFormattedEq(e) + " and has x intercept as " + str(p[0]) + \
-               ", its equation would be"
+        ques = "If a line is parallel to the line " + getFormattedEq(e) + " and has x intercept as " + "$" + str(p[0]) + \
+               "$" + ", its equation would be"
     return ques
 
 
@@ -812,7 +812,7 @@ def getOptions(Qtype, i=0, m=0, eq=0, set=0, points=0):
             if num == 2 or num == 3:
                 inc = reverseI
             m1 = getFormattedSlope(inc, "eq")
-            eq = "y = " + m1 + "(x" + getSignedString(c) + ")"
+            eq = "$ y = " + m1 + "(x" + getSignedString(c) + ") $"
             return eq
         reverseI = i
         if i in set2:
@@ -1146,7 +1146,7 @@ def getCollinearPoints(equation):
     return [x, y]
 
 
-def getFormattedEq(eq=None, eqtype=None, points=None):
+def getFormattedEq1(eq=None, eqtype=None, points=None):
     """
 
 
@@ -1279,6 +1279,136 @@ def getFormattedEq(eq=None, eqtype=None, points=None):
     return temp
 
 
+def getFormattedEq(eq=None, eqtype=None, points=None):
+    """
+
+
+    :rtype : object
+    :param eq:
+    :return:
+    """
+    temp = ""
+    if not eqtype:
+        if eq[0] != 0:
+            if eq[0] % 1 == 0:
+                eq[0] = int(eq[0])
+            else:
+                eq[0] = round(eq[0], 2)
+            temp += GetCoeffString(eq[0]) + "x"
+        if eq[1] != 0:
+            if eq[1] % 1 == 0:
+                eq[1] = int(eq[1])
+            else:
+                eq[1] = round(eq[1], 2)
+            if eq[0] == 0:
+                temp += GetCoeffString(eq[1]) + "y"
+            else:
+                if eq[1] == 1:
+                    temp += "+y"
+                elif eq[1] == -1:
+                    temp += "-y"
+                else:
+                    temp += getSignedString(eq[1]) + "y"
+        if eq[2] != 0:
+            if eq[2] % 1 == 0:
+                eq[2] = int(eq[2])
+            else:
+                eq[2] = round(eq[2], 2)
+            temp += getSignedString(eq[2])
+        temp += " = 0"
+    else:
+        x1 = points[0]
+        y1 = points[1]
+        x2 = points[2]
+        y2 = points[3]
+        m = (y2 - y1) / (x2 - x1)
+        if m % 1 == 0:
+            m = int(m)
+        else:
+            m = round(m, 2)
+        if m == 0:
+            m = random.randint(2, 9)
+        if x1 % 1 == 0:
+            x1 = int(x1)
+        if y1 % 1 == 0:
+            y1 = int(y1)
+        if x2 % 1 == 0:
+            x2 = int(x2)
+        if y2 % 1 == 0:
+            y2 = int(y2)
+        if eqtype == "SP":
+            temp += "y" + getSignedString(-y1) + " = " + str(m) + "(x" + getSignedString(-x1) + ")"
+        elif eqtype == "SI":
+            c = round(-((y2-y1)/(x2-x1)) * x1 + y1)
+            if c % 1 == 0:
+                c = int(c)
+            temp += "y = " + GetCoeffString(m) + "x" + getSignedString(c)
+        elif eqtype == "TP":
+            d1 = GetCoeffString(y2 - y1)
+            d2 = GetCoeffString(x2 - x1)
+            n1 = "(y" + getSignedString(-y1) + ")"
+            n2 = "(x" + getSignedString(-x1) + ")"
+            if d1 == "":
+                lhs = n1
+            elif d1 == "-":
+                lhs = "-" + n1
+            else:
+                lhs = "\\frac{" + n1 + "}{" + d1 + "}"
+            if d2 == "":
+                rhs = n2
+            elif d2 == "-":
+                rhs = "-" + n2
+            else:
+                rhs = "\\frac{" + n2 + "}{" + d2 + "}"
+            temp += lhs + " = " + rhs
+
+        elif eqtype == "DI":
+            d1 = GetCoeffString(y1)
+            d2 = GetCoeffString(x1)
+            n1 = "y"
+            n2 = "x"
+            if d1 == "":
+                f1 = n1
+            elif d1 == "-":
+                f1 = "-" + n1
+            else:
+                if "-" in d1:
+                    f1 = "- \\frac{" + n1 + "}{" + MultiplyMinus(d1) + "}"
+                else:
+                    f1 = "\\frac{" + n1 + "}{" + d1 + "}"
+            if d2 == "":
+                f2 = "+ " + n2
+            elif d2 == "-":
+                f2 = "- " + n2
+            else:
+                if "-" in d2:
+                    f2 = "- \\frac{" + n2 + "}{" + MultiplyMinus(d2) + "}"
+                else:
+                    f2 = "+ \\frac{" + n2 + "}{" + d2 + "}"
+            temp += f1 + f2 + " = 1"
+
+        elif eqtype == "P" or eqtype == "Po":
+            temp += "y = " + str(y1) + getSignedString(-eq[0]) + "cos&Theta; ;"
+            temp += "x = " + str(x1) + getSignedString(eq[1]) + "cos&Theta;"
+
+        elif eqtype == "N":
+            t = random.randint(0, 7)
+            t1 = angleSet[t][1]
+            temp += "x cos" + str(t1) + " + y sin" + str(t1) + " = " + str(t)
+        elif eqtype == "PX":
+            t = random.randint(0, 7)
+            t1 = angleSet[t][0]
+            temp += "x = " + str(x1) + " cos" + str(t1)
+        elif eqtype == "PY":
+            t = random.randint(0, 7)
+            t1 = angleSet[t][0]
+            temp += "y = " + str(y1) + " cos" + str(t1)
+
+    temp = "$" + temp + "$"
+
+    return temp
+
+
 def getStringToDisplay(Qtype, equation=0, m=0, i=0):
     """
 
@@ -1291,9 +1421,9 @@ def getStringToDisplay(Qtype, equation=0, m=0, i=0):
     if Qtype == 1 or Qtype == 2:
         display = "inclination: " + str(i) + " degree"
     elif Qtype == 7 or Qtype == 8:
-        display = getFormattedEq(equation)
+        display = getFormattedEq1(equation)
     else:
-        display = getFormattedEq(equation)
+        display = getFormattedEq1(equation)
     return display
 
 
@@ -1303,7 +1433,7 @@ def getFormattedSlope(deg=None, where=None):
         if deg in set1:
             fm = "0"
         elif deg in set2:
-            fm = "1/(&radic;3)"
+            fm = "\\frac{1}{&radic;3}"
         elif deg in set3:
             if where == "eq":
                 fm = ""
@@ -1321,7 +1451,7 @@ def getFormattedSlope(deg=None, where=None):
             else:
                 fm = "-1"
         elif deg in set8:
-            fm = "-1/(&radic;3)"
+            fm = "\\frac{-1}{&radic;3}"
     return fm
 
 
@@ -1364,4 +1494,4 @@ if __name__ == "__main__":
     else:
         choice1 = 3
     name = raw_input("Enter a name for the CSV: ")
-    cordinateGeo(assess[choice], choice1, name)
+    coordinateGeo(assess[choice], choice1, name)
