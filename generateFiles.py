@@ -10,9 +10,9 @@ def generateCSV(ques, name="test"):
     withImages = [1, 2, 4, 5, 7, 8, 10, 12]
     for q in ques:
         Question = q['Q']
-        hint1 = q['hints'][0]
-        hint2 = q['hints'][1]
-        hint3 = q['hints'][2]
+        hints = []
+        for hint in q['hints']:
+            hints.append(hint)
         options = []
         feedback = []
         index = 0
@@ -34,6 +34,14 @@ def generateCSV(ques, name="test"):
         feedback2 = feedback[1]
         feedback3 = feedback[2]
         feedback4 = feedback[3]
+        hint1 = hint2 = hint3 = ""
+        if len(hints) > 0:
+            hint1 = hints[0]
+            if len(hints) > 1:
+                hint2 = hints[1]
+                if len(hints) == 3:
+                    hint3 = hints[2]
+
         data.append(
             [Question, 4, option1, option2, option3, option4, correct, hint1, hint2, hint3, topic, difficulty,
                 feedback[0], feedback[1], feedback[2], feedback[3]])

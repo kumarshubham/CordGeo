@@ -52,7 +52,7 @@ def coordinateGeo(assess, num=3, name="test"):
             points = getLinePoints(slope=slope)
             equation = getEqFromPoints(points)
             question = getQuestion(Qtype, m1, inclination, [points], equation)
-            hints = getHints(Qtype, inclination, points)
+            hints = getHints(Qtype, inclination, points, m=m1)
             options = getOptions(Qtype, inclination, slope, [equation], set=angleSet[temp1])
             OFmap = options[1]
             options = options[0]
@@ -144,6 +144,7 @@ def coordinateGeo(assess, num=3, name="test"):
                 if slope1 != "&infin;" and slope2 != "&infin;" and slope3 != "&infin;" and slope4 != "&infin;" and \
                              slope1 != slope2 and slope1 != slope3 and slope1 != slope4 and slope1 != 0:
                     loop = False
+            m = round(slope1, 2)
             eq1 = getEqFromPoints(points1)
             eq2 = getEqFromPoints(points2)
             eq3 = getEqFromPoints(points3)
@@ -155,7 +156,7 @@ def coordinateGeo(assess, num=3, name="test"):
             eq = [eq1, eq2, eq3, eq4]
             slope = round(slope1, 2)
             question = getQuestion(Qtype, slope, inclination, [points, points1], equation)
-            hints = getHints(Qtype, inclination, points)
+            hints = getHints(Qtype, inclination, points, e=equation, m=m, inversM=slope)
             options = getOptions(Qtype, inclination, slope, [equation, equation1], set=angleSet[temp1], points=[points, points1])
             OFmap = options[1]
             options = options[0]
@@ -237,7 +238,7 @@ def coordinateGeo(assess, num=3, name="test"):
             options = getOptions(Qtype, eq=eq, set=angleSet[temp1])
             OFmap = options[1]
             options = options[0]
-            feedback = getOptionsNFeedback(Qtype, options, OFmap)
+            feedback = getOptionsNFeedback(Qtype, options, OFmap, p=points1)
         elif Qtype == 26:
             x = random.randint(-12, 12)
             y = random.randint(-12, 12)
@@ -303,7 +304,7 @@ def coordinateGeo(assess, num=3, name="test"):
             points = getLinePoints(slope=slope)
             equation = getEqFromPoints(points)
             question = getQuestion(Qtype, m1, inclination, [points], equation)
-            hints = getHints(Qtype, inclination, points)
+            hints = getHints(Qtype, inclination, points, e=equation)
             options = getOptions(Qtype, inclination, slope, [equation], set=angleSet[temp1])
             OFmap = options[1]
             options = options[0]
@@ -519,8 +520,8 @@ def getQuestion(Qtype=0, m=0, i=0, p=0, e=0):
         ques = "If " + "$" + str((p[0], p[1])) + ", " + str((p[2], 'K')) + "$" + " & " + "$" + str((p1[0], p1[1])) + "$" + " are collinear," \
                " find the value of K"
     elif Qtype == 15:
-        ques = "If " + "$" + str((p[0], 'K')) + "$" + " & " + "$" + str((p[2], p[3])) + "$" + " are parallel to the line " +\
-               getFormattedEq(e) + ", Find the value of K "
+        ques = "If the line " + getFormattedEq(e) + " is parallel to the line passing through the points " +\
+               "$" + str((p[0], 'K')) + "$" + " and " + "$" + str((p[2], p[3])) + "$" + ", Find the value of K "
     elif Qtype == 16:
         ques = "If the line " + getFormattedEq(e) + " is perpendicular to the line passing through the points " +\
                "$" + str((p1[0], p1[1])) + "$" + " and " + "$" + str((p1[2], 'K')) + "$" + ", Find the value of K "
@@ -850,7 +851,7 @@ def getOptions(Qtype, i=0, m=0, eq=0, set=0, points=0):
     return [options, OFmap]
 
 
-def getOptionsNFeedback(Qtype, option, OFmap):
+def getOptionsNFeedback(Qtype, option, OFmap, p=None):
     """
 
     :param Qtype:
@@ -858,6 +859,7 @@ def getOptionsNFeedback(Qtype, option, OFmap):
     :param OFmap:
     :return:
     """
+    if not p: p = [0, 1]
     feedbackStr1 = "Your answer is correct! Let's try the next one"
     feedbackStr2 = "The selected answer is the value inclination and not slope. Value of slope = tan (inclination)"
     feedbackStr3 = "The value of slope is tan (inclination) and not sin (inclination) [or cos (inclination)]"
@@ -875,6 +877,69 @@ def getOptionsNFeedback(Qtype, option, OFmap):
     feedbackStr10 = "Unfortunately the selected answer is incorrect. Let's try the next one"
     feedbackStr11 = "The selected option is reciprocal of the value of slope. Please check the formula for slope. "
     feedbackStr12 = "The selected option is parallel to X (or Y) Axis and hence incorrect. Let's try the next one"
+
+    ## for 1.1.3
+    feedbackStr13 = "Your answer is incorrect as you have used the formula -b/a which is the reciprocal " \
+                    "of the slope. The correct formula for slope of a line $ ax+by+c = 0 $ is $ -\\frac{a}{b} $"
+    feedbackStr14 = "Your answer is incorrect since you have incorrectly used -c/a as the formula for slope. " \
+                    "The correct formula for slope of a line $ ax+by+c = 0 $ is $ -\\frac{a}{b} $"
+    feedbackStr15 = "Your answer is incorrect since you have incorrectly used -c/a as the formula for slope. " \
+                    "The correct formula for slope of a line $ ax+by+c = 0 $ is $ -\\frac{a}{b} $"
+    feedbackStr16 = "Your answer is incorrect since the slope of the selected line is " + str(option[0])
+
+    # for 1.1.4 and 1.1.5
+    feedbackStr17 = "You seem to have used the formula for parallel lines incorrect as $ m1 = - m2 $"
+    feedbackStr18 = "You seem to have used the formula for perpendicular lines $ (m1*m2 = -1) $ and " \
+                    "not parallel lines $ (m1 = m2) $"
+    feedbackStr19 = "You seem to have used the formula for parallel lines $ (m1 = m2) $ and not  " \
+                    "perpendicular lines $ (m1*m2 = -1) $ "
+    feedbackStr20 = "You seem to have used the formula for perpendicular lines incorrectly since " \
+                    "$ m1*m2 = -1 $ and not 1"
+    feedbackStr21 = "The selected option is incorrect since it makes the lines perpendicular"
+
+    #for 1.2.1
+    feedbackStr22 = "Since the equation is of the type $ x = a $ and not $ y = b $, it cannot be parallel to the X axis"
+    feedbackStr23 = "The equation is of the type $ x = a $ but a is not zero hence it is not the Y axis"
+    feedbackStr24 = "Since the equation is of the type $ y = b $ and not $ x = a $, it cannot be parallel to the Y axis"
+    feedbackStr25 = "The equation for the X axis is $ y = 0 $ and not $ x = 0 $"
+    feedbackStr26 = "The equation is of the type $ x = a $ but $ a = 0 $ hence it is the Y axis"
+    feedbackStr27 = "The equation for the Y axis is $ x = 0 $ and not $ y = 0 $"
+    feedbackStr28 = "The equation is of the type $ y = b $ but $ b = 0 $ hence it is the X axis"
+    feedbackStr29 = "In the form $ y = mx + c $, m is the slope and c is the Y coordinate  and not the X coordinate"
+    feedbackStr30 = "The point $ " + str((p[0], p[1])) + " $ does not lie on the line denoted by the selected equation"
+    feedbackStr31 = "In the form $ x = -\\frac{1}{m}x + c $, m is the slope and c is the X coordinate  " \
+                    "and not the Y coordinate"
+    feedbackStr33 = "The point of intersection should satisfy both the line equations which is not true in this case"
+    feedbackStr34 = "The equation is of the type x = b but b is not zero hence it is not the X axis"
+
+    # for 1.2.2
+    form = {27: 'Slope-Point', 28: 'Slope-Intercept', 29: 'Two-Points', 30: 'Double-Intercept', 31: 'Polar/Parametric',
+                32: 'Normal'}
+    if Qtype in form:
+        feedbackStr35 = "The selected equation is in the form $ y = mx + c $ which is the slope intercept " \
+                        "form and not the " + form[Qtype] + " form"
+        feedbackStr36 = "The selected equation is in the form $ \\frac{y-y1}{y1-y2} = \\frac{x-x1}{x1-x2} $" \
+                        "which is the two points form and not the " + form[Qtype] + " form"
+        feedbackStr37 = "The selected equation is in the form $ \\frac{x}{a} + \\frac{y}{b} = 1 $ which is the double "\
+                        "intercept form and not the " + form[Qtype] + " form"
+        feedbackStr38 = "The selected equation is in the form $ y-y1 = m(x -x1) $ which is the " \
+                        "slope point form and not the " + form[Qtype] + " form"
+        feedbackStr39 = "The equation is in normal form and not polar / parametric form"
+        feedbackStr40 = "The equation is of the type y = b and hence not in " + form[Qtype] + " form"
+        feedbackStr41 = "The equation is of the type x = a and hence not in " + form[Qtype] + " form"
+        feedbackStr42 = "The equation is in polar / parametric form and not normal form"
+
+    # for 1.2.3
+    feedbackStr43 = "Incorrect Answer since the equation for slope intercept form is of the type $ y = mx + c $"
+    feedbackStr44 = "Incorrect Answer since the equation for two points form is of the type " \
+                    "$ \\frac{y-y1}{y1-y2} = \\frac{x-x1}{x1-x2} $"
+    feedbackStr45 = "Incorrect answer since the equation for double intercept form is of the type " \
+                    "$ \\frac{x}{a} + \\frac{y}{b} = 1 $"
+    feedbackStr46 = "Incorrect Answer since the equation for slope point form is of the type $ y-y1 = m(x -x1) $"
+    feedbackStr47 = "Incorrect Answer since the equation for normal form is of the type " \
+                    "$ x cos&Theta; + y sin&Theta; = d $"
+    feedbackStr48 = "Incorrect Answer since the equation for polar / parametric form is of the type " \
+                    "$ y = y1 +a cos&Theta; ; x = x1 +asin&Theta; $"
     options = []
     feedback = []
     if Qtype == 1 or Qtype == 3:
@@ -887,33 +952,55 @@ def getOptionsNFeedback(Qtype, option, OFmap):
     elif Qtype == 5:
         feedback = [feedbackStr1, feedbackStr11, feedbackStr12, feedbackStr10]
     elif Qtype == 7 or Qtype == 9:
-        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
+        feedback = [feedbackStr1, feedbackStr13, feedbackStr14, feedbackStr15]
     elif Qtype == 8:
-        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
-    elif Qtype == 10 or Qtype == 11 or Qtype == 15:
-        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
-    elif Qtype == 12 or Qtype == 13 or Qtype == 16:
-        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
-    elif Qtype == 14:
-        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
-    elif Qtype == 17:
-        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
-    elif Qtype == 18:
-        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
+        feedback = [feedbackStr1, feedbackStr16, feedbackStr16, feedbackStr10]
+    elif Qtype in [10, 11, 14, 15, 17]:
+        feedback = [feedbackStr1, feedbackStr17, feedbackStr18, feedbackStr10]
+    elif Qtype in [12, 13, 16, 18]:
+        feedback = [feedbackStr1, feedbackStr19, feedbackStr20, feedbackStr10]
     elif Qtype == 19:
-        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
-    elif Qtype == 20 or Qtype == 21:
-        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
-    elif Qtype == 22 or Qtype == 23:
-        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
-    elif Qtype == 24 or Qtype == 25:
-        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
+        feedback = [feedbackStr1, feedbackStr17, feedbackStr21, feedbackStr10]
+    elif Qtype == 20:
+        feedback = [feedbackStr1, feedbackStr22, feedbackStr23, feedbackStr10]
+    elif Qtype == 21:
+        feedback = [feedbackStr1, feedbackStr24, feedbackStr34, feedbackStr10]
+    elif Qtype == 22:
+        feedback = [feedbackStr1, feedbackStr25, feedbackStr26, feedbackStr10]
+    elif Qtype == 23:
+        feedback = [feedbackStr1, feedbackStr27, feedbackStr28, feedbackStr10]
+    elif Qtype == 24:
+        feedback = [feedbackStr1, feedbackStr29, feedbackStr30, feedbackStr30]
+    elif Qtype == 25:
+        feedback = [feedbackStr1, feedbackStr31, feedbackStr30, feedbackStr30]
     elif Qtype == 26:
-        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
-    elif Qtype == 27 or Qtype == 28 or Qtype == 29 or Qtype == 30 or Qtype == 31 or Qtype == 32:
-        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
-    elif Qtype == 33 or Qtype == 34 or Qtype == 35 or Qtype == 36 or Qtype == 37 or Qtype == 38 or Qtype == 39:
-        feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
+        feedback = [feedbackStr1, feedbackStr33, feedbackStr33, feedbackStr33]
+    elif Qtype == 27:
+        feedback = [feedbackStr1, feedbackStr35, feedbackStr36, feedbackStr37]
+    elif Qtype == 28:
+        feedback = [feedbackStr1, feedbackStr38, feedbackStr36, feedbackStr37]
+    elif Qtype == 29:
+        feedback = [feedbackStr1, feedbackStr38, feedbackStr35, feedbackStr37]
+    elif Qtype == 30:
+        feedback = [feedbackStr1, feedbackStr38, feedbackStr35, feedbackStr36]
+    elif Qtype == 31:
+        feedback = [feedbackStr1, feedbackStr39, feedbackStr40, feedbackStr41]
+    elif Qtype == 32:
+        feedback = [feedbackStr1, feedbackStr42, feedbackStr40, feedbackStr41]
+    elif Qtype == 33:
+        feedback = [feedbackStr1, feedbackStr43, feedbackStr44, feedbackStr45]
+    elif Qtype == 34:
+        feedback = [feedbackStr1, feedbackStr46, feedbackStr44, feedbackStr45]
+    elif Qtype == 35:
+        feedback = [feedbackStr1, feedbackStr46, feedbackStr45, feedbackStr43]
+    elif Qtype == 36:
+        feedback = [feedbackStr1, feedbackStr46, feedbackStr43, feedbackStr44]
+    elif Qtype == 37:
+        feedback = [feedbackStr1, feedbackStr47, feedbackStr46, feedbackStr43]
+    elif Qtype == 38:
+        feedback = [feedbackStr1, feedbackStr47, feedbackStr46, feedbackStr43]
+    elif Qtype == 39:
+        feedback = [feedbackStr1, feedbackStr48, feedbackStr44, feedbackStr45]
     elif Qtype == 40 or Qtype == 41 or Qtype == 42 or Qtype == 43:
         feedback = [feedbackStr1, feedbackStr10, feedbackStr10, feedbackStr10]
     count = 0
@@ -935,7 +1022,7 @@ def getOptionsNFeedback(Qtype, option, OFmap):
     return options
 
 
-def getHints(Qtype=0, i=0, p=None):
+def getHints(Qtype=0, i=0, p=None, e=None, m=0, inverseM=0):
     """
 
     :param Qtype:
@@ -944,6 +1031,7 @@ def getHints(Qtype=0, i=0, p=None):
     :return:
     """
     if not p: p = [0, 1, 2, 3]   ## Just for initialization
+    if not e: e = [0, 1, 2]
     hintStr1 = "Identify the angle made between the line and the X axis. Check the figure and see if you can find " \
                "the angle"
     hintStr2 = "The value of slope of the line = tan (inclination in degrees or radians)"
@@ -951,7 +1039,7 @@ def getHints(Qtype=0, i=0, p=None):
     hintStr4 = "If the value of slope = 1 then the value of inclination should be either 45 degrees (or \/4c) or " \
                "225 degrees (or 5\/4c)"
     hintStr5 = "Identify the angle made between the line and the X axis."
-    hintStr6 = "Use the equation for slope when given two points i.e. slope = (y2-y1) / (x2-x1)"
+    hintStr6 = "Use the equation for slope when given two points i.e. slope $ = \\frac{y2-y1}{x2-x1} $"
     hintStr7 = "Substitute appropriate values of x1,y1,x2 and y2 in the equation mentioned in the previous hint"
     hintStr8 = "Put x1 = " + str(p[0]) + ", y1 = " + str(p[1]) + ",  x2 = " + str(p[2]) + " " \
                "and y2 = " + str(p[3]) + " in the equation given in Hint 1 to get the answer for slope"
@@ -961,6 +1049,59 @@ def getHints(Qtype=0, i=0, p=None):
                 "degrees or 270 to 360 degrees"
     hintStr11 = "Substitute appropriate values of x1,y1,x2 and y2 from each of the figures in the equation " \
                 "mentioned in the previous hint to find slope"
+    hintStr12 = "Arrange the equation in the form $ ax + by + c = 0 $"
+    hintStr13 = "Find the values of a and b as per the standard equation and use the formula for slope i.e. $ m =" \
+                " -\\frac{a}{b} $"
+    hintStr14 = "In this case $ a = " + str(e[0]) + " $ and $ b = " + str(e[1]) + " $"
+    hintStr15 = "Find the slopes of each line given by slope $ = -\\frac{a}{b} $"
+    hintStr16 = "Compare the slopes with " + str(m) + " to find the correct option"
+    hintStr17 = "Since both the lines are parallel to each other their slopes i.e. m1 and m2 would be equal"
+    hintStr18 = "Find the equations of the two lines and derive the value of slope "
+    hintStr19 = "Equate the values of slope to get the value of K"
+    hintStr20 = "Since both the lines are perpendicular to each other $ m1*m2 = -1 $ considering m1 and m2 " \
+                "are the slopes of line 1 and line 2 respectively"
+    hintStr21 = "Find the equations of the two lines and derive the value of slope . Let them be m1 and m2 respectively"
+    hintStr22 = "Substitute the values of m1 and m2 in $ m1*m2 = -1 $ to get the value of K"
+    hintStr23 = "Since the three points are collinear, lines drawn through any two of the three points " \
+                "would be parallel i.e their slopes would be equal"
+    hintStr24 = "Find the equations of the two lines taking two points at a time while ensuring " \
+                "that the same points are not repeated and one of the points is K in one of the lines"
+    hintStr25 = "Find the slopes m1 and m2 of the two lines and equate the values of slope to get the value of K"
+    hintStr26 = "Find the slope of the equation "
+    hintStr27 = "Use the fact that for parallel lines, m1 = m2 . Equate the value of m1 with the equation " \
+                "for slope of m2 considering two points"
+    hintStr28 = "Use the fact that for perpendicular lines, $ m1*m2 = -1 $. Equate the value of $ -\\frac{1}{m1} $" \
+                "with the equation for slope of m2 considering two points"
+    hintStr29 = "Find the slope of the line " + getFormattedEq(e) + " using the formula $ -\\frac{a}{b} $"
+    hintStr30 = "Since you need to find the parallel line, select the line which has slope " \
+                "equal to the line " + getFormattedEq(e)
+    hintStr31 = "Since the slope of the line " + getFormattedEq(e) + " is " + str(m) + ", the correct option " \
+                "would also have the slope " + str(m)
+    hintStr32 = "Since you need to find the perpendicular line, select the line which has slope equal to the " \
+                "negative reciprocal of the slope of the line " + getFormattedEq(e)
+    hintStr33 = "Since the slope of the line " + getFormattedEq(e) + " is " + str(m) + ", the correct option " \
+                "would have the slope as " + str(inverseM) + " which would make $ m1*m2 = -1 $"
+    hintStr34 = "Find the slope of the line joining the any two of the three points given. Do this for two combinations"
+    hintStr35 = "Find the combination where m1 = m2 to show that they are parallel " \
+                "(also collinear since there would be a common point)"
+    hintStr36 = "Identify the type of equation i.e is it of the type $ x = a $ or $ y = b $"
+    hintStr37 = "If the given equation is of the type x = a, it will be parallel to the Y axis and " \
+                "if the equation is of the type y = b it will be parallel to X axis"
+    hintStr38 = "Note that if a or b are 0 then the equation would be $ x = 0 $ or $ y = 0 $" \
+                "which represents Y axis or X axis respectively"
+    hintStr39 = "Since the Y intercept is given, the equation representing the line should be of the " \
+                "type $ y = mx + c $ with  c = Y intercept on  axis"
+    hintStr40 = "Y intercept = 4"
+    hintStr41 = "Since the X intercept is given, the equation representing the line should be of the " \
+                "type yx= (-1/m)x + c with c = X intercept on  axis"
+    hintStr42 = "X intercept = 4"
+    hintStr43 = "An equation in the Slope - Point form is represented as $ y-y1 = m(x-x1) $"
+    hintStr44 = "An equation in the Slope - Intercept form is represented as $ y=mx + c $"
+    hintStr45 = "An equation in the Two-Points form is represented as $ \\frac{y-y1}{y1-y2} = \\frac{x-x1}{x1-x2} $"
+    hintStr46 = "An equation in the double Double Intercepts form is represented as $ \\frac{x}{a} +\\frac{y}{b} = 1 $"
+    hintStr47 = "An equation in the Parametric form / Polar form is represented as " \
+                "$ y = y1 + acos&Theta; ; x = x1 +asin&Theta; $"
+    hintStr48 = "An equation in the Normal Form is represented as  $ x cos&Theta; +y sin&Theta; = d $"
     hint = []
     if Qtype == 1:
         hint.append(hintStr1)
@@ -983,73 +1124,64 @@ def getHints(Qtype=0, i=0, p=None):
         hint.append(hintStr9)
         hint.append(hintStr11)
     elif Qtype == 7 or Qtype == 9:
-        hint.append(hintStr6)
-        hint.append(hintStr7)
-        hint.append(hintStr8)
+        hint.append(hintStr12)
+        hint.append(hintStr13)
+        hint.append(hintStr14)
     elif Qtype == 8:
-        hint.append(hintStr6)
-        hint.append(hintStr9)
-        hint.append(hintStr11)
+        hint.append(hintStr12)
+        hint.append(hintStr15)
+        hint.append(hintStr16)
     elif Qtype == 10 or Qtype == 11:
-        hint.append(hintStr6)
-        hint.append(hintStr9)
-        hint.append(hintStr11)
+        hint.append(hintStr17)
+        hint.append(hintStr18)
+        hint.append(hintStr19)
     elif Qtype == 12 or Qtype == 13:
-        hint.append(hintStr6)
-        hint.append(hintStr9)
-        hint.append(hintStr11)
+        hint.append(hintStr20)
+        hint.append(hintStr21)
+        hint.append(hintStr22)
     elif Qtype == 14:
-        hint.append(hintStr6)
-        hint.append(hintStr9)
-        hint.append(hintStr11)
+        hint.append(hintStr23)
+        hint.append(hintStr24)
+        hint.append(hintStr25)
     elif Qtype == 15:
-        hint.append(hintStr6)
-        hint.append(hintStr9)
-        hint.append(hintStr11)
+        hint.append(hintStr26)
+        hint.append(hintStr27)
     elif Qtype == 16:
-        hint.append(hintStr6)
-        hint.append(hintStr9)
-        hint.append(hintStr11)
+        hint.append(hintStr26)
+        hint.append(hintStr28)
     elif Qtype == 17:
-        hint.append(hintStr6)
-        hint.append(hintStr9)
-        hint.append(hintStr11)
+        hint.append(hintStr29)
+        hint.append(hintStr30)
+        hint.append(hintStr31)
     elif Qtype == 18:
-        hint.append(hintStr6)
-        hint.append(hintStr9)
-        hint.append(hintStr11)
+        hint.append(hintStr29)
+        hint.append(hintStr32)
+        hint.append(hintStr33)
     elif Qtype == 19:
-        hint.append(hintStr6)
-        hint.append(hintStr9)
-        hint.append(hintStr11)
+        hint.append(hintStr34)
+        hint.append(hintStr35)
     elif Qtype == 20 or Qtype == 21 or Qtype == 22 or Qtype == 23:
-        hint.append(hintStr6)
-        hint.append(hintStr9)
-        hint.append(hintStr11)
-    elif Qtype == 24 or Qtype == 25:
-        hint.append(hintStr6)
-        hint.append(hintStr9)
-        hint.append(hintStr11)
-    elif Qtype == 26:
-        hint.append(hintStr6)
-        hint.append(hintStr9)
-        hint.append(hintStr11)
-    elif Qtype == 27 or Qtype == 28 or Qtype == 29 or Qtype == 30:
-        hint.append(hintStr6)
-        hint.append(hintStr9)
-        hint.append(hintStr11)
-    elif Qtype == 31 or Qtype == 32:
-        hint.append(hintStr6)
-        hint.append(hintStr9)
-        hint.append(hintStr11)
-    elif Qtype == 33 or Qtype == 34 or Qtype == 35 or Qtype == 36:
-        hint.append(hintStr6)
-        hint.append(hintStr9)
-        hint.append(hintStr11)
-    elif Qtype == 37 or Qtype == 38 or Qtype == 39:
-        hint.append(hintStr6)
-        hint.append(hintStr9)
-        hint.append(hintStr11)
+        hint.append(hintStr36)
+        hint.append(hintStr37)
+        hint.append(hintStr38)
+    elif Qtype == 24:
+        hint.append(hintStr39)
+        hint.append(hintStr40)
+    elif Qtype == 25:
+        hint.append(hintStr41)
+        hint.append(hintStr42)
+    elif Qtype == 27:
+        hint.append(hintStr43)
+    elif Qtype == 28:
+        hint.append(hintStr44)
+    elif Qtype == 29:
+        hint.append(hintStr45)
+    elif Qtype == 30:
+        hint.append(hintStr46)
+    elif Qtype == 31:
+        hint.append(hintStr47)
+    elif Qtype == 32:
+        hint.append(hintStr48)
     elif Qtype == 40:
         hint.append(hintStr6)
         hint.append(hintStr9)

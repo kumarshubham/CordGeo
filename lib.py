@@ -428,7 +428,7 @@ def GetNewIfEqual(list, num=str(random.randint(0, 7))):
     while match:
         match = False
         for item in list:
-            if num == item:
+            if str(num) == str(item):
                 num = str(random.randint(0, 7))
                 match = True
     return num
